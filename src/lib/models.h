@@ -5,9 +5,9 @@
 #include <vector>
 
 struct Ship {
-  char boatId;
-  std::string boatName;
-  int boatSize;
+  char shipId;
+  std::string shipName;
+  int shipSize;
 };
 
 struct Board {
