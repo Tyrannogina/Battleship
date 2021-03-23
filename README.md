@@ -7,8 +7,8 @@ Battleship game in C++
 - [ ] First version of the game working
   #### User stories:
   - [x] User can see the menu and select “One player vs Computer” or “Quit”
-  - [ ] User can start the game and place their ships (defined in the .ini file).
-  - [ ] User can skip placing their ships and ships will be automatically placed.
+  - [x] User can start the game and place their ships (defined in the .ini file).
+  - [x] User can skip placing their ships and ships will be automatically placed.
   - [ ] User can see their board and the computer’s board 
   - [ ] User can “shoot” to the other board and hits get displayed on the enemy board
   - [ ] User can get hit by enemy torpedoes ant that gets displayed on the user’s board
