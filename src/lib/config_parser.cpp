@@ -5,12 +5,19 @@
 
 #include "config_parser.h"
 
+/**
+  * Constructor defines the constants for minimum and maximum board size and the filename of the configuration file.
+  * File must be placed on the root of the project.
+  */
 ConfigParser::ConfigParser()
   : MIN_BOARD_SIZE(5), 
     MAX_BOARD_SIZE(80),
     filename("adaship_config.ini"){};
 
-bool ConfigParser::fileExists() {
+/**
+  * Checks if the config file exists.
+  */
+bool ConfigParser::configFileExists() {
   struct stat buf;
   if (stat(filename.c_str(), &buf) == 0) {
     return true;
@@ -18,6 +25,12 @@ bool ConfigParser::fileExists() {
   return false;
 }
 
+/**
+  * Splits a string by a single delimiter and place the new strings in a vector.
+  * @param delimiter - Delimiter string
+  * @param str - String to be split
+  * @return vector with the two strings resulting from the split.
+  */
 std::vector<std::string> splitByDelimiter(std::string delimiter, std::string str) {
   int delimiterPos = str.find(delimiter);
   if (delimiterPos == str.npos) {
@@ -25,36 +38,48 @@ std::vector<std::string> splitByDelimiter(std::string delimiter, std::string str
   }
   std::vector<std::string> vect;
   vect.push_back(str.substr(0, delimiterPos));
-  vect.push_back(str.substr(delimiterPos + 1, str.npos));
+  vect.push_back(str.substr(delimiterPos + delimiter.size(), str.npos));
   return vect;
 }
 
+/**
+  * Removes spaces from a string.
+  * @param str reference to the string that will be stripped out of spaces.
+  */
 void removeSpaces(std::string& str) {
   str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
 }
 
-int ConfigParser::parseSize(std::string sizeStr) {
-  int size = 0;
-  try {
-    size = std::stoi(sizeStr);
-  } catch (...) {
-    std::cout << "Size incorrectly defined";
-  }
-  return size;
+/**
+  * Checks if a string actually contains an integer. Returns the integer or throws error
+  * @param sizeStr - string to validate
+  * @return int
+  */
+int ConfigParser::sizeValidator(std::string sizeStr) {
+  return std::stoi(sizeStr);
 }
 
+/**
+  * Checks if a string actually contains an integer and if said integer 
+  * @param sizeStr - string to validate
+  * @return int
+  */
 int ConfigParser::parseBoardSize(std::string sizeStr) {
-  int size = parseSize(sizeStr);
-  if (size > MAX_BOARD_SIZE) {
-    size = MAX_BOARD_SIZE;
-  } else if (size < MIN_BOARD_SIZE) {
-    size = MIN_BOARD_SIZE;
+  try {
+    int size = sizeValidator(sizeStr);
+    if (size > MAX_BOARD_SIZE) {
+      size = MAX_BOARD_SIZE;
+    } else if (size < MIN_BOARD_SIZE) {
+      size = MIN_BOARD_SIZE;
+    }
+    return size;
+  } catch (...) {
+    throw "Invalid format for the board size";
   }
-  return size;
 }
 
 int ConfigParser::parseShipSize(std::string sizeStr) {
-  int size = parseSize(sizeStr);
+  int size = sizeValidator(sizeStr);
   if (size > MAX_BOARD_SIZE) {
     throw "Ship can't be bigger than the board";
   } else if (size < 1) {
@@ -98,7 +123,7 @@ std::vector<std::string> ConfigParser::fileToVector() {
 }
 
 Config ConfigParser::parseConfig() {
-  if (!fileExists()) {
+  if (!configFileExists()) {
     std::cout << "File not found";
   }
   std::vector<std::string> configLines = fileToVector();
