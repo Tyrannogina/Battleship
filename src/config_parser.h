@@ -11,13 +11,12 @@
   * "Boat: Carrier, 5"
   * and as many boats as are on the board.
   */
-class ConfigParser
-{
-public:
+class ConfigParser {
+ public:
   ConfigParser();
   Config parseConfig();
 
-private:
+ private:
   const int MIN_BOARD_SIZE;
   const int MAX_BOARD_SIZE;
   const std::string filename;
@@ -29,5 +28,5 @@ private:
   BoardConfig parseBoard(std::string str);
   Ship parseShip(std::string str);
 };
- 
+
 #endif

@@ -10,9 +10,9 @@
   * File must be placed on the root of the project.
   */
 ConfigParser::ConfigParser()
-  : MIN_BOARD_SIZE(5), 
-    MAX_BOARD_SIZE(80),
-    filename("adaship_config.ini"){};
+    : MIN_BOARD_SIZE(5),
+      MAX_BOARD_SIZE(80),
+      filename("adaship_config.ini") {};
 
 /**
   * Checks if the config file exists.
@@ -31,7 +31,8 @@ bool ConfigParser::configFileExists() {
   * @param str - String to be split
   * @return vector with the two strings resulting from the split.
   */
-std::vector<std::string> splitByDelimiter(std::string delimiter, std::string str) {
+std::vector<std::string> splitByDelimiter(std::string delimiter,
+                                          std::string str) {
   int delimiterPos = str.find(delimiter);
   if (delimiterPos == str.npos) {
     throw "Error: format of configuration line not recognised";
@@ -91,17 +92,17 @@ int ConfigParser::parseShipSize(std::string sizeStr) {
 BoardConfig ConfigParser::parseBoard(std::string str) {
   std::vector<std::string> sizes = splitByDelimiter("x", str);
   return {
-    parseBoardSize(sizes[0]),
-    parseBoardSize(sizes[1])
+      parseBoardSize(sizes[0]),
+      parseBoardSize(sizes[1])
   };
 }
 
 Ship ConfigParser::parseShip(std::string shipStr) {
   std::vector<std::string> shipVector = splitByDelimiter(",", shipStr);
   Ship ship = {
-    shipVector[0].at(0),
-    shipVector[0],
-    parseShipSize(shipVector[1])
+      shipVector[0].at(0),
+      shipVector[0],
+      parseShipSize(shipVector[1])
   };
   return ship;
 }

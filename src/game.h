@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "lib/models.h"
+#include "models.h"
 #include "board.h"
 
 /// A coordinate on the board.
@@ -17,17 +17,16 @@ struct Direction {
 };
 
 /**
-  Contains the Game class, which is in charge of running the game, from selection of game type, initialisation, turns and game until end.
+ * Contains the Game class, which is in charge of running the game, from selection of game type, initialisation, turns and game until end.
  */
-class Game
-{
-public:
+class Game {
+ public:
   Game();
   ~Game();
   void startGame();
   void endGame();
 
-private:
+ private:
   /// Config information containing board size and ships information.
   Config config;
   /// Board of the first player, to be used for the duration of the game
@@ -51,6 +50,6 @@ private:
   Direction getRandomDirection(std::vector<Direction>& directions);
   int randomInt(int min, int max);
   void displayWinner();
-};    
+};
 
 #endif
