@@ -22,6 +22,7 @@ class Board {
   std::vector<std::vector<Cell>> grid;
   int getHeight() const;
   int getWidth() const;
+  void displayBoard();
 };
 
 #endif

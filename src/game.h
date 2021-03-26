@@ -35,7 +35,6 @@ class Game {
   int currentPlayer;
 
   static void displayMenu();
-  int readMenuSelection();
   void createPlayers(bool automatedPlayer1, bool automatedPlayer2);
   void placeShips();
   void manuallyPlaceShips();
