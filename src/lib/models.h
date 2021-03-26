@@ -10,13 +10,13 @@ struct Ship {
   int shipSize;
 };
 
-struct Board {
+struct BoardConfig {
   int height;
   int width;
 };
 
 struct Config {
-  Board board;
+  BoardConfig board;
   std::vector<Ship> ships;
 };
 

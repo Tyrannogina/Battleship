@@ -2,12 +2,7 @@
 #define GAME_H
 
 #include "lib/models.h"
-
-/// Each one of the components of the board
-struct Cell {
-  char cellType;
-  bool firedUpon;
-};
+#include "board.h"
 
 /// A coordinate on the board.
 struct Coordinate {
@@ -36,9 +31,9 @@ private:
   /// Config information containing board size and ships information.
   Config config;
   /// Board of the first player, to be used for the duration of the game
-  Cell **player1Board;
+  Board player1Board;
   /// Board of the second player, to be used for the duration of the game 
-  Cell **player2Board;
+  Board player2Board;
 
   void displayMenu();
   void displayShipPlacementMenu(Ship currentShip);

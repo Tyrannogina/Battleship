@@ -26,7 +26,7 @@ private:
   int parseBoardSize(std::string sizeStr);
   int parseShipSize(std::string sizeStr);
   std::vector<std::string> fileToVector();
-  Board parseBoard(std::string str);
+  BoardConfig parseBoard(std::string str);
   Ship parseShip(std::string str);
 };
  

@@ -88,13 +88,12 @@ int ConfigParser::parseShipSize(std::string sizeStr) {
   return size;
 }
 
-Board ConfigParser::parseBoard(std::string str) {
+BoardConfig ConfigParser::parseBoard(std::string str) {
   std::vector<std::string> sizes = splitByDelimiter("x", str);
-  Board board = {
+  return {
     parseBoardSize(sizes[0]),
     parseBoardSize(sizes[1])
   };
-  return board;
 }
 
 Ship ConfigParser::parseShip(std::string shipStr) {

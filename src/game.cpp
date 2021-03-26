@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "lib/config_parser.h"
+#include "board.h"
 #include "game.h"
 
 /// Constructor calls the config parser to initialise the game and creates the boards accordingly
@@ -14,12 +15,6 @@ Game::Game() {
   // TODO: figure out how to combine this in one method.
   createPlayer1Board();
   createPlayer2Board();
-}
-
-/// Destructor destroys the boards
-Game::~Game() {
-  delete player1Board;
-  delete player2Board;
 }
 
 /**
@@ -48,33 +43,13 @@ void Game::displayShipPlacementMenu(Ship currentShip) {
 }
 
 void Game::createPlayer1Board() {
-  player1Board = new Cell*[config.board.height];
-
-  for (int i = 0; i < config.board.height; i++) {
-    player1Board[i] = new Cell[config.board.width];
-    for (int j = 0; j < config.board.width; j++) {
-      Cell emptyCell = {
-        'W',
-        false
-      };
-      player1Board[i][j] = emptyCell;
-    }
-  }
+  Board board(config.board.height, config.board.width);
+  player1Board = board;
 }
 
 void Game::createPlayer2Board() {
-  player2Board = new Cell*[config.board.height];
-
-  for (int i = 0; i < config.board.height; i++) {
-    player2Board[i] = new Cell[config.board.width];
-    for (int j = 0; j < config.board.width; j++) {
-      Cell emptyCell = {
-        'W',
-        false
-      };
-      player2Board[i][j] = emptyCell;
-    }
-  }
+  Board board(config.board.height, config.board.width);
+  player2Board = board;
 }
 
 /**
@@ -119,13 +94,13 @@ int Game::transformLetterToRow(char letter) {
   return letter - 64;
 }
 
-std::vector<Direction> Game::getValidDirections(Coordinate coord, Ship ship) {
+std::vector<Direction> Game::getValidDirections(Coordinate coord, Ship ship, Board& board) {
     bool isValid = true;
     std::vector<Direction> validDirections;
 
     // Checking "up"
     for (int r = coord.row - ship.shipSize + 1; r < coord.row - 1; r++) {
-      if (r < 0 || player1Board[r][coord.col].cellType != 'W') {
+      if (r < 0 || board[r][coord.col].cellType != 'W') {
         isValid = false;
         break;
       }
