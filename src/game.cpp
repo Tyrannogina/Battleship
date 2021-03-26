@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 #include <random>
@@ -12,9 +11,15 @@
 Game::Game() {
   ConfigParser configParser;
   config = configParser.parseConfig();
-  // TODO: figure out how to combine this in one method.
-  createPlayer1Board();
-  createPlayer2Board();
+  createPlayers(false, true);
+}
+
+void Game::createPlayers(bool automatedPlayer1, bool automatedPlayer2) {
+  Player player1(automatedPlayer1);
+  player1.initialisePlayer(config);
+  Player player2(automatedPlayer2);
+  player2.initialisePlayer(config);
+  this->players = {player1, player2};
 }
 
 /**
@@ -34,21 +39,6 @@ std::string readLine() {
   std::string str;
   std::getline(std::cin, str);
   return str;
-}
-
-void Game::displayShipPlacementMenu(Ship currentShip) {
-  std::cout << "\033[34mWrite the starting coordinate for your ship\033[0m\n";
-  std::cout << "\033[34m0 - Quit\033[0m\n";
-}
-
-void Game::createPlayer1Board() {
-  Board board(config.board.height, config.board.width);
-  player1Board = board;
-}
-
-void Game::createPlayer2Board() {
-  Board board(config.board.height, config.board.width);
-  player2Board = board;
 }
 
 /**
@@ -96,14 +86,13 @@ int Game::transformLetterToRow(char letter) {
 }
 
 std::vector<Direction> Game::getValidDirections(Coordinate coord,
-                                                Ship ship,
-                                                Board& board) {
+                                                Ship ship) {
   bool isValid = true;
   std::vector<Direction> validDirections;
 
   // Checking "up"
   for (int r = coord.row - ship.shipSize + 1; r < coord.row - 1; r++) {
-    if (r < 0 || board[r][coord.col].cellType != 'W') {
+    if (r < 0 || players[currentPlayer].board.grid[r][coord.col].cellType != 'W') {
       isValid = false;
       break;
     }
@@ -117,7 +106,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Check "down"
   for (int r = coord.row + 1; r < coord.row + ship.shipSize - 1; r++) {
     if (r > config.board.height - 1
-        || player1Board[r][coord.col].cellType != 'W') {
+        || players[currentPlayer].board.grid[r][coord.col].cellType != 'W') {
       isValid = false;
       break;
     }
@@ -131,7 +120,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Check "right"
   for (int c = coord.col + 1; c < coord.col + ship.shipSize - 1; c++) {
     if (c > config.board.width - 1
-        || player1Board[coord.row][c].cellType != 'W') {
+        || players[currentPlayer].board.grid[coord.row][c].cellType != 'W') {
       isValid = false;
       break;
     }
@@ -144,7 +133,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
 
   // Check "left"
   for (int c = coord.col - ship.shipSize + 1; c < coord.col - 1; c++) {
-    if (c < 0 || player1Board[coord.row][c].cellType != 'W') {
+    if (c < 0 || players[currentPlayer].board.grid[coord.row][c].cellType != 'W') {
       isValid = false;
       break;
     }
@@ -158,7 +147,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   return validDirections;
 }
 
-void Game::shipPlacementPhase() {
+void Game::manuallyPlaceShips() {
   for (Ship ship : config.ships) {
     std::cout << "\033[1;34m\nTime to place your " << ship.shipName
               << " 🚢 !\033[0m\n";
@@ -178,7 +167,7 @@ void Game::shipPlacementPhase() {
       try {
         coord = checkCellValidity(input);
         validCell = true;
-      } catch (std::string error) {
+      } catch (std::string& error) {
         std::cout << "Error: invalid coordinate. " << error
                   << "\nPlease try again!\n";
         input = readLine();
@@ -221,13 +210,13 @@ void Game::shipPlacementPhase() {
 void Game::placeShip(Coordinate coord, Direction dir, Ship ship) {
   for (int i = 0; i < ship.shipSize; i++) {
     if (dir.name == "Up")
-      player1Board[coord.row - i][coord.col].cellType = ship.shipId;
+      players[currentPlayer].board.grid[coord.row - i][coord.col].cellType = ship.shipId;
     if (dir.name == "Down")
-      player1Board[coord.row + i][coord.col].cellType = ship.shipId;
+      players[currentPlayer].board.grid[coord.row + i][coord.col].cellType = ship.shipId;
     if (dir.name == "Left")
-      player1Board[coord.row][coord.col - i].cellType = ship.shipId;
+      players[currentPlayer].board.grid[coord.row][coord.col - i].cellType = ship.shipId;
     if (dir.name == "Right")
-      player1Board[coord.row][coord.col + i].cellType = ship.shipId;
+      players[currentPlayer].board.grid[coord.row][coord.col + i].cellType = ship.shipId;
   }
 }
 
@@ -252,11 +241,19 @@ void Game::autoplaceShips() {
     Coordinate coord;
     do {
       coord = pickRandomCoordinate();
-    } while (player1Board[coord.row][coord.col].cellType == 'W');
+    } while (players[currentPlayer].board.grid[coord.row][coord.col].cellType == 'W');
 
     std::vector<Direction> validDirections = getValidDirections(coord, ship);
     Direction dir = getRandomDirection(validDirections);
     placeShip(coord, dir, ship);
+  }
+}
+
+void Game::placeShips() {
+  if (players[currentPlayer].automated) {
+    autoplaceShips();
+  } else {
+    manuallyPlaceShips();
   }
 }
 
@@ -285,6 +282,11 @@ void Game::startGame() {
       std::cout << "That was not a valid menu option, please try again!\n";
     }
   } while (selection != 0);
-};
+}
+void Game::shipPlacementPhase() {
+  for (currentPlayer = 0; currentPlayer < players.size(); currentPlayer++) {
+    placeShips();
+  }
+}
 
 void endGame();

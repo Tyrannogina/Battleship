@@ -3,6 +3,7 @@
 
 #include "models.h"
 #include "board.h"
+#include "player.h"
 
 /// A coordinate on the board.
 struct Coordinate {
@@ -22,34 +23,34 @@ struct Direction {
 class Game {
  public:
   Game();
-  ~Game();
   void startGame();
   void endGame();
 
  private:
   /// Config information containing board size and ships information.
   Config config;
-  /// Board of the first player, to be used for the duration of the game
-  Board player1Board;
-  /// Board of the second player, to be used for the duration of the game 
-  Board player2Board;
 
-  void displayMenu();
-  void displayShipPlacementMenu(Ship currentShip);
+  std::vector<Player> players;
+
+  int currentPlayer;
+
+  static void displayMenu();
   int readMenuSelection();
-  void createPlayer1Board();
-  void createPlayer2Board();
-  void shipPlacementPhase();
+  void createPlayers(bool automatedPlayer1, bool automatedPlayer2);
+  void placeShips();
+  void manuallyPlaceShips();
+  void autoplaceShips();
   char cleanUpChar(char letter);
   Coordinate checkCellValidity(std::string cellStr);
   int transformLetterToRow(char letter);
   std::vector<Direction> getValidDirections(Coordinate coord, Ship ship);
   void placeShip(Coordinate coord, Direction dir, Ship ship);
-  void autoplaceShips();
+
   Coordinate pickRandomCoordinate();
   Direction getRandomDirection(std::vector<Direction>& directions);
   int randomInt(int min, int max);
   void displayWinner();
+  void shipPlacementPhase();
 };
 
 #endif

@@ -12,7 +12,7 @@
 ConfigParser::ConfigParser()
     : MIN_BOARD_SIZE(5),
       MAX_BOARD_SIZE(80),
-      filename("adaship_config.ini") {};
+      filename("../adaship_config.ini") {};
 
 /**
   * Checks if the config file exists.

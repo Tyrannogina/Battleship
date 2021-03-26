@@ -1,34 +1,17 @@
 #include "board.h"
 
-Board::Board(int height, int width) {
-  board = new Cell* [height];
+Board::Board() {}
 
-  for (int i = 0; i < height; i++) {
-    board[i] = new Cell[width];
-    for (int j = 0; j < width; j++) {
-      Cell emptyCell = {
-          'W',
-          false
-      };
-      board[i][j] = emptyCell;
-    }
-  }
+Board::Board(int height, int width) : height(height), width(width) {
+  this->grid = std::vector<std::vector<Cell>>(
+    height,
+    std::vector<Cell>(width, {'W', false, "W"}));
 }
 
-/// Destructor destroys the boards
-Board::~Board() {
-  delete board;
-}
-void Board::setHeight(int h) {
-  height = h;
-}
-
-void Board::setWidth(int w) {
-  width = w;
-}
-int Board::getHeight() {
+int Board::getHeight() const {
   return height;
 }
-int Board::getWidth() {
+
+int Board::getWidth() const {
   return width;
 }
