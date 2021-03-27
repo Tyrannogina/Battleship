@@ -89,11 +89,12 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
                                                 Ship ship) {
   bool isValid = true;
   std::vector<Direction> validDirections;
+  char waterType = '~';
 
   // Checking "up"
   for (int r = coord.row - ship.shipSize + 1; r < coord.row - 1; r++) {
     if (r < 0
-        || players[currentPlayer].board.grid[r][coord.col].cellType != 'W') {
+        || players[currentPlayer].board.grid[r][coord.col].cellType != waterType) {
       isValid = false;
       break;
     }
@@ -107,7 +108,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Check "down"
   for (int r = coord.row + 1; r < coord.row + ship.shipSize - 1; r++) {
     if (r > config.board.height - 1
-        || players[currentPlayer].board.grid[r][coord.col].cellType != 'W') {
+        || players[currentPlayer].board.grid[r][coord.col].cellType != waterType) {
       isValid = false;
       break;
     }
@@ -121,7 +122,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Check "right"
   for (int c = coord.col + 1; c < coord.col + ship.shipSize - 1; c++) {
     if (c > config.board.width - 1
-        || players[currentPlayer].board.grid[coord.row][c].cellType != 'W') {
+        || players[currentPlayer].board.grid[coord.row][c].cellType != waterType) {
       isValid = false;
       break;
     }
@@ -135,7 +136,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Check "left"
   for (int c = coord.col - ship.shipSize + 1; c < coord.col - 1; c++) {
     if (c < 0
-        || players[currentPlayer].board.grid[coord.row][c].cellType != 'W') {
+        || players[currentPlayer].board.grid[coord.row][c].cellType != waterType) {
       isValid = false;
       break;
     }
@@ -161,6 +162,7 @@ void Game::manuallyPlaceShips() {
     if (input == "0") {
       std::cout << "\033[34mShips will be randomly placed.\033[0m\n";
       autoplaceShips();
+      players[currentPlayer].board.displayBoard();
       break;
     }
     bool validCell = false;
@@ -190,13 +192,14 @@ void Game::manuallyPlaceShips() {
     if (input == "0") {
       std::cout << "\033[34mShips will be randomly placed.\033[0m\n";
       autoplaceShips();
+      players[currentPlayer].board.displayBoard();
       break;
     }
 
     bool validDirection = false;
     do {
       try {
-        Direction selectedDirection = validDirections[std::stoi(input)];
+        Direction selectedDirection = validDirections[std::stoi(input) - 1];
         placeShip(coord, selectedDirection, ship);
         players[currentPlayer].board.displayBoard();
         validDirection = true;
@@ -232,7 +235,7 @@ Coordinate Game::pickRandomCoordinate() {
 }
 
 Direction Game::getRandomDirection(std::vector<Direction>& directions) {
-  return directions[randomInt(0, directions.size())];
+  return directions[randomInt(0, directions.size() - 1)];
 }
 
 int Game::randomInt(int min, int max) {
@@ -248,9 +251,13 @@ void Game::autoplaceShips() {
     do {
       coord = pickRandomCoordinate();
     } while (players[currentPlayer].board.grid[coord.row][coord.col].cellType
-        == 'W');
+        != '~');
 
-    std::vector<Direction> validDirections = getValidDirections(coord, ship);
+    std::vector<Direction> validDirections;
+    do {
+      validDirections = getValidDirections(coord, ship);
+    } while (validDirections.size() == 0);
+
     Direction dir = getRandomDirection(validDirections);
     placeShip(coord, dir, ship);
   }

@@ -4,7 +4,7 @@
 Board::Board() {}
 
 Board::Board(int height, int width) : height(height), width(width) {
-  Cell emptyCell = {'W', false, "[W]"};
+  Cell emptyCell = {'~', false, "[~]"};
   this->grid = std::vector<std::vector<Cell>>(
       height,
       std::vector<Cell>(width, emptyCell));
