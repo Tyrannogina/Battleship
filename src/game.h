@@ -11,10 +11,9 @@ struct Coordinate {
   int col;
 };
 
-// Given a cell, this stores a direction (up, down, left, right) and if it's free to place a boat
+// Given a cell, this stores a direction (Up, Down, Left, Right)
 struct Direction {
   std::string name;
-  bool state;
 };
 
 /**
@@ -29,9 +28,7 @@ class Game {
  private:
   /// Config information containing board size and ships information.
   Config config;
-
   std::vector<Player> players;
-
   int currentPlayer;
 
   static void displayMenu();
@@ -42,7 +39,7 @@ class Game {
   char cleanUpChar(char letter);
   Coordinate checkCellValidity(std::string cellStr);
   int transformLetterToRow(char letter);
-  std::vector<Direction> getValidDirections(Coordinate coord, Ship ship);
+  std::vector<Direction> getValidDirections(Coordinate coord, const Ship& ship);
   void placeShip(Coordinate coord, Direction dir, Ship ship);
 
   Coordinate pickRandomCoordinate();

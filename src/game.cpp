@@ -6,9 +6,12 @@
 #include "config_parser.h"
 #include "board.h"
 #include "game.h"
+#include "IOHelper.h"
 
-/// Constructor calls the config parser to initialise the game and creates the boards accordingly
-Game::Game() {
+/**
+ * Constructor calls config parser and creates players based on the config.
+ */
+Game::Game() : currentPlayer(0) {
   ConfigParser configParser;
   config = configParser.parseConfig();
   createPlayers(false, true);
@@ -26,19 +29,10 @@ void Game::createPlayers(bool automatedPlayer1, bool automatedPlayer2) {
   * Displays initial menu with game options and option for quitting.
   */
 void Game::displayMenu() {
-  std::cout << "\033[1;34mWelcome to Battleship 💥 🚢 !\033[0m\n";
-  std::cout << "\033[34mWhat would you like to do?\033[0m\n";
-  std::cout << "\033[34m1 - One player vs. computer\033[0m\n";
-  std::cout << "\033[34m0 - Quit\033[0m\n";
-}
-
-/**
-  * Reads a line inputted by the user on the terminal.
-  */
-std::string readLine() {
-  std::string str;
-  std::getline(std::cin, str);
-  return str;
+  IOHelper::printMenuText("Welcome to Battleship 💥 🚢 !");
+  IOHelper::printMenuText("What would you like to do?");
+  IOHelper::printMenuText("1 - One player vs. computer");
+  IOHelper::printMenuText("0 - Quit");
 }
 
 /**
@@ -51,7 +45,7 @@ Coordinate Game::checkCellValidity(std::string cellStr) {
     throw "Row can't be more than board height: "
         + std::to_string(config.board.height);
   }
-  std::string colStr = cellStr.substr(1, cellStr.npos);
+  std::string colStr = cellStr.substr(1, std::string::npos);
   int col;
   try {
     col = std::stoi(colStr);
@@ -86,7 +80,7 @@ int Game::transformLetterToRow(char letter) {
 }
 
 std::vector<Direction> Game::getValidDirections(Coordinate coord,
-                                                Ship ship) {
+                                                const Ship& ship) {
   bool isValid = true;
   std::vector<Direction> validDirections;
   char waterType = '~';
@@ -94,13 +88,14 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Checking "up"
   for (int r = coord.row - ship.shipSize + 1; r < coord.row - 1; r++) {
     if (r < 0
-        || players[currentPlayer].board.grid[r][coord.col].cellType != waterType) {
+        || players[currentPlayer].board.grid[r][coord.col].cellType
+            != waterType) {
       isValid = false;
       break;
     }
   }
   if (isValid) {
-    validDirections.push_back({"Up", true});
+    validDirections.push_back({"Up"});
   } else {
     isValid = true;
   }
@@ -108,13 +103,14 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Check "down"
   for (int r = coord.row + 1; r < coord.row + ship.shipSize - 1; r++) {
     if (r > config.board.height - 1
-        || players[currentPlayer].board.grid[r][coord.col].cellType != waterType) {
+        || players[currentPlayer].board.grid[r][coord.col].cellType
+            != waterType) {
       isValid = false;
       break;
     }
   }
   if (isValid) {
-    validDirections.push_back({"Down", true});
+    validDirections.push_back({"Down"});
   } else {
     isValid = true;
   }
@@ -122,13 +118,14 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Check "right"
   for (int c = coord.col + 1; c < coord.col + ship.shipSize - 1; c++) {
     if (c > config.board.width - 1
-        || players[currentPlayer].board.grid[coord.row][c].cellType != waterType) {
+        || players[currentPlayer].board.grid[coord.row][c].cellType
+            != waterType) {
       isValid = false;
       break;
     }
   }
   if (isValid) {
-    validDirections.push_back({"Right", true});
+    validDirections.push_back({"Right"});
   } else {
     isValid = true;
   }
@@ -136,13 +133,14 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   // Check "left"
   for (int c = coord.col - ship.shipSize + 1; c < coord.col - 1; c++) {
     if (c < 0
-        || players[currentPlayer].board.grid[coord.row][c].cellType != waterType) {
+        || players[currentPlayer].board.grid[coord.row][c].cellType
+            != waterType) {
       isValid = false;
       break;
     }
   }
   if (isValid) {
-    validDirections.push_back({"Left", true});
+    validDirections.push_back({"Left"});
   } else {
     isValid = true;
   }
@@ -151,48 +149,43 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
 }
 
 void Game::manuallyPlaceShips() {
-  for (Ship ship : config.ships) {
-    std::cout << "\033[1;34m\nTime to place your " << ship.shipName
-              << " 🚢 !\033[0m\n";
-    std::cout << "\033[34mThis ship has a size of " << ship.shipSize
-              << "\033[0m\n";
-    std::cout
-        << "\033[34mPlease, write the starting cell for your ship, i.e. A1.\nWrite 0 to skip this step and autoplace the ships.\033[0m\n";
-    std::string input = readLine();
+  for (const Ship& ship : config.ships) {
+    IOHelper::printMenuText("\nTime to place your " + ship.shipName + " 🚢 !");
+    IOHelper::printMenuText("This ship has a size of " + std::to_string(ship.shipSize));
+    IOHelper::printMenuText(
+        "Please, write the starting cell for your ship, i.e. A1.\nWrite 0 to skip this step and autoplace the ships.");
+    std::string input = IOHelper::readLine();
     if (input == "0") {
-      std::cout << "\033[34mShips will be randomly placed.\033[0m\n";
+      IOHelper::printMenuText("Ships will be randomly placed.");
       autoplaceShips();
-      players[currentPlayer].board.displayBoard();
+      players[currentPlayer].board.displayOwnBoard();
       break;
     }
     bool validCell = false;
-    Coordinate coord;
+    Coordinate coord{};
     do {
       try {
         coord = checkCellValidity(input);
         validCell = true;
       } catch (std::string& error) {
-        std::cout << "Error: invalid coordinate. " << error
-                  << "\nPlease try again!\n";
-        input = readLine();
+        IOHelper::printMenuText("Error: invalid coordinate. " + error + "\nPlease try again!");
+        input = IOHelper::readLine();
       }
     } while (!validCell);
 
     std::vector<Direction> validDirections = getValidDirections(coord, ship);
 
-    std::cout
-        << "\033[34mGreat, we have the starting point. Now select one of the following directions to place your ship.\n\033[0m\n";
+    IOHelper::printMenuText("Great, we have the starting point. Now select one of the following directions to place your ship.");
     for (int i = 0; i < validDirections.size(); i++) {
-      std::cout << "\033[34m" << i + 1 << " - " << validDirections[i].name
-                << "\033[0m\n";
+      IOHelper::printMenuText(std::to_string(i + 1) + " - " + validDirections[i].name);
     }
-    std::cout << "\033[34m0 - Quit\033[0m\n";
-    input = readLine();
+    IOHelper::printMenuText("0 - Quit");
+    input = IOHelper::readLine();
 
     if (input == "0") {
-      std::cout << "\033[34mShips will be randomly placed.\033[0m\n";
+      IOHelper::printMenuText("Ships will be randomly placed.");
       autoplaceShips();
-      players[currentPlayer].board.displayBoard();
+      players[currentPlayer].board.displayOwnBoard();
       break;
     }
 
@@ -201,12 +194,13 @@ void Game::manuallyPlaceShips() {
       try {
         Direction selectedDirection = validDirections[std::stoi(input) - 1];
         placeShip(coord, selectedDirection, ship);
-        players[currentPlayer].board.displayBoard();
+        players[currentPlayer].board.displayOwnBoard();
         validDirection = true;
       } catch (std::string error) {
-        std::cout << "Error: invalid direction to place the ship. " << error
-                  << "\nPlease try again!\n";
-        input = readLine();
+        IOHelper::printMenuText(
+            "Error: invalid direction to place the ship. " + error
+                                                           + "\nPlease try again!\n");
+        input = IOHelper::readLine();
       }
     } while (!validDirection);
 
@@ -214,9 +208,7 @@ void Game::manuallyPlaceShips() {
 }
 
 void Game::placeShip(Coordinate coord, Direction dir, Ship ship) {
-  std::string representation = "[" + std::string(1, ship.shipId) + "]";
-
-  Cell cell = {ship.shipId, false, representation};
+  Cell cell = {ship.shipId, false};
   for (int i = 0; i < ship.shipSize; i++) {
     if (dir.name == "Up")
       players[currentPlayer].board.grid[coord.row - i][coord.col] = cell;
@@ -235,7 +227,8 @@ Coordinate Game::pickRandomCoordinate() {
 }
 
 Direction Game::getRandomDirection(std::vector<Direction>& directions) {
-  return directions[randomInt(0, directions.size() - 1)];
+  Direction dir = directions[randomInt(0, directions.size() - 1)];
+  return dir;
 }
 
 int Game::randomInt(int min, int max) {
@@ -246,7 +239,7 @@ int Game::randomInt(int min, int max) {
   return uni(rng);
 }
 void Game::autoplaceShips() {
-  for (Ship ship : config.ships) {
+  for (Ship& ship : config.ships) {
     Coordinate coord;
     do {
       coord = pickRandomCoordinate();
@@ -256,7 +249,7 @@ void Game::autoplaceShips() {
     std::vector<Direction> validDirections;
     do {
       validDirections = getValidDirections(coord, ship);
-    } while (validDirections.size() == 0);
+    } while (validDirections.empty());
 
     Direction dir = getRandomDirection(validDirections);
     placeShip(coord, dir, ship);
@@ -272,7 +265,7 @@ void Game::placeShips() {
 }
 
 void Game::displayWinner() {
-  std::cout << "And the winner is";
+  IOHelper::printMenuText("And the winner is");
 }
 
 void Game::startGame() {
@@ -280,20 +273,22 @@ void Game::startGame() {
   do {
     displayMenu();
     try {
-      selection = std::stoi(readLine());
+      selection = std::stoi(IOHelper::readLine());
       switch (selection) {
         case 1: {
           shipPlacementPhase();
           break;
         }
         case 2:break;
-        case 0:std::cout << "Goodbye\n";
+        case 0:IOHelper::printMenuText("Goodbye");
           break;
         default:
-          std::cout << "That was not a valid menu option, please try again!\n";
+          IOHelper::printMenuText(
+              "That was not a valid menu option, please try again!");
       }
     } catch (...) {
-      std::cout << "That was not a valid menu option, please try again!\n";
+      IOHelper::printMenuText(
+          "That was not a valid menu option, please try again!");
     }
   } while (selection != 0);
 }
