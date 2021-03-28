@@ -21,12 +21,12 @@ class ConfigParser {
   const int MAX_BOARD_SIZE;
   const std::string filename;
   bool configFileExists();
-  int sizeValidator(std::string sizeStr);
-  int parseBoardSize(std::string sizeStr);
-  int parseShipSize(std::string sizeStr);
+  static int sizeValidator(const std::string& sizeStr);
+  int parseBoardSize(const std::string& sizeStr) const;
+  int parseShipSize(const std::string& sizeStr) const;
   std::vector<std::string> fileToVector();
-  BoardConfig parseBoard(std::string str);
-  Ship parseShip(std::string str);
+  BoardConfig parseBoard(const std::string& str);
+  Ship parseShip(const std::string& str);
 };
 
 #endif

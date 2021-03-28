@@ -19,10 +19,7 @@ ConfigParser::ConfigParser()
   */
 bool ConfigParser::configFileExists() {
   struct stat buf;
-  if (stat(filename.c_str(), &buf) == 0) {
-    return true;
-  }
-  return false;
+  return stat(filename.c_str(), &buf) == 0;
 }
 
 /**
@@ -31,15 +28,15 @@ bool ConfigParser::configFileExists() {
   * @param str - String to be split
   * @return vector with the two strings resulting from the split.
   */
-std::vector<std::string> splitByDelimiter(std::string delimiter,
-                                          std::string str) {
+std::vector<std::string> splitByDelimiter(const std::string& delimiter,
+                                          const std::string& str) {
   int delimiterPos = str.find(delimiter);
-  if (delimiterPos == str.npos) {
+  if (delimiterPos == std::string::npos) {
     throw "Error: format of configuration line not recognised";
   }
   std::vector<std::string> vect;
   vect.push_back(str.substr(0, delimiterPos));
-  vect.push_back(str.substr(delimiterPos + delimiter.size(), str.npos));
+  vect.push_back(str.substr(delimiterPos + delimiter.size(), std::string::npos));
   return vect;
 }
 
@@ -56,7 +53,7 @@ void removeSpaces(std::string& str) {
   * @param sizeStr - string to validate
   * @return int
   */
-int ConfigParser::sizeValidator(std::string sizeStr) {
+int ConfigParser::sizeValidator(const std::string& sizeStr) {
   return std::stoi(sizeStr);
 }
 
@@ -65,7 +62,7 @@ int ConfigParser::sizeValidator(std::string sizeStr) {
   * @param sizeStr - string to validate
   * @return int
   */
-int ConfigParser::parseBoardSize(std::string sizeStr) {
+int ConfigParser::parseBoardSize(const std::string& sizeStr) const {
   try {
     int size = sizeValidator(sizeStr);
     if (size > MAX_BOARD_SIZE) {
@@ -79,7 +76,7 @@ int ConfigParser::parseBoardSize(std::string sizeStr) {
   }
 }
 
-int ConfigParser::parseShipSize(std::string sizeStr) {
+int ConfigParser::parseShipSize(const std::string& sizeStr) const {
   int size = sizeValidator(sizeStr);
   if (size > MAX_BOARD_SIZE) {
     throw "Ship can't be bigger than the board";
@@ -89,7 +86,7 @@ int ConfigParser::parseShipSize(std::string sizeStr) {
   return size;
 }
 
-BoardConfig ConfigParser::parseBoard(std::string str) {
+BoardConfig ConfigParser::parseBoard(const std::string& str) {
   std::vector<std::string> sizes = splitByDelimiter("x", str);
   return {
       parseBoardSize(sizes[0]),
@@ -97,12 +94,13 @@ BoardConfig ConfigParser::parseBoard(std::string str) {
   };
 }
 
-Ship ConfigParser::parseShip(std::string shipStr) {
+Ship ConfigParser::parseShip(const std::string& shipStr) {
   std::vector<std::string> shipVector = splitByDelimiter(",", shipStr);
   Ship ship = {
       shipVector[0].at(0),
       shipVector[0],
-      parseShipSize(shipVector[1])
+      parseShipSize(shipVector[1]),
+      0
   };
   return ship;
 }
@@ -136,9 +134,10 @@ Config ConfigParser::parseConfig() {
       config.board = parseBoard(parsedLine[1]);
     }
     if (parsedLine[0] == "Boat") {
-      // TODO: insert control of repeated ships. For now we trust they don't repeat the ID
+      // TODO: insert control of repeated ships. For now we trust they don't
+      //  repeat the ID, else they'll be overwritten.
       Ship currentShip = parseShip(parsedLine[1]);
-      config.ships.push_back(currentShip);
+      config.ships[currentShip.shipCode] = currentShip;
     }
   }
   return config;

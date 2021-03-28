@@ -9,6 +9,7 @@ class Player {
   Player(bool automated);
   Player();
   Board board;
+  std::map<char, Ship> ships;
   bool automated{};
   int getScore();
   void scorePoints(int points);
@@ -16,6 +17,7 @@ class Player {
 
  private:
   int score{};
+
 };
 
 #endif //SRC_PLAYER_H
