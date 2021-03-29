@@ -10,6 +10,7 @@ struct Ship {
   std::string shipName;
   int shipSize;
   int shipHits;
+  bool isPlaced;
 };
 
 struct BoardConfig {

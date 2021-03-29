@@ -111,6 +111,15 @@ void Board::printCell(CellRepresentation rep, const Cell& cell) {
                           false);
     }
       break;
+    case CellRepresentation::UNKNOWN_HIT: {
+      std::string s(1, cell.cellType);
+      IOHelper::printText("[ # ]",
+                          IOHelper::REGULAR,
+                          IOHelper::FG_RED,
+                          IOHelper::BG_DEFAULT,
+                          false);
+    }
+      break;
   }
 }
 
@@ -145,7 +154,7 @@ CellRepresentation Board::assignCellRepresentationForEnemyBoard(Cell& cell) {
     if (cell.cellType == '~') {
       return WATER_HIT;
     } else {
-      return SHIP_HIT;
+      return UNKNOWN_HIT;
     }
   } else {
     return UNKNOWN;

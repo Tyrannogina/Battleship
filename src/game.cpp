@@ -130,7 +130,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   }
 
   // Check "down"
-  for (int r = coord.row + 1; r < coord.row + shipSize - 1; r++) {
+  for (int r = coord.row + 1; r < coord.row + shipSize; r++) {
     if (r > config.board.height - 1
         || players[currentPlayer].board.grid[r][coord.col].cellType
             != waterType) {
@@ -145,7 +145,7 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
   }
 
   // Check "right"
-  for (int c = coord.col + 1; c < coord.col + shipSize - 1; c++) {
+  for (int c = coord.col + 1; c < coord.col + shipSize; c++) {
     if (c > config.board.width - 1
         || players[currentPlayer].board.grid[coord.row][c].cellType
             != waterType) {
@@ -176,28 +176,56 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
 }
 
 /**
+ * Tries to pick an empty coordinate in the board.
+ * @param initialMessage message printed the first time asking for the
+ * coordinate.
+ * @param invalidCoordMessage message printed when asking if the previous
+ * attempt was not valid.
+ * @return
+ */
+Coordinate Game::manuallySelectEmptyCoordinate(const std::string& initialMessage,
+                                               const std::string& invalidCoordMessage) {
+  IOHelper::printMenuText(initialMessage);
+  std::string input = IOHelper::readLine();
+  Coordinate coord{};
+  do {
+    if (input == "0") {
+      // This is a workaround to allow users to automatically place ships.
+      throw std::exception();
+    }
+    coord = requestCoordinateValue(input);
+    if (players[currentPlayer].board.grid[coord.row][coord.col].cellType
+        != '~') {
+      IOHelper::printMenuText(invalidCoordMessage);
+      input = IOHelper::readLine();
+    }
+  } while (players[currentPlayer].board.grid[coord.row][coord.col].cellType
+      != '~');
+  return coord;
+}
+
+/**
  * Loops through each of the player's ship and asks them a starting coordinate
  * and a direction to place the ship. The player also has the option to skip
  * this step and get the ships automatically placed.
  */
 void Game::manuallyPlaceShips() {
-  for (const std::pair<const char, Ship>& ship : players[currentPlayer].ships) {
+  for (std::pair<const char, Ship>& ship : players[currentPlayer].ships) {
     IOHelper::printMenuText(
         "\nTime to place your " + ship.second.shipName + "!");
     IOHelper::printMenuText(
         "This ship has a size of " + std::to_string(ship.second.shipSize)
             + ".");
-    IOHelper::printMenuText(
-        "Please, write the starting cell for your ship, i.e. A1.\nWrite 0 to skip this step and autoplace the ships.");
-    std::string input = IOHelper::readLine();
-    if (input == "0") {
+    Coordinate coord;
+    try {
+      coord = manuallySelectEmptyCoordinate(
+          "Please, write the starting cell for your ship, i.e. A1.\nWrite 0 to skip this step and autoplace the ships.",
+          "This cell is already occupied, please select a different one: i.e. B2");
+    } catch (...) {
       IOHelper::printMenuText("Ships will be randomly placed.");
       autoplaceShips();
-      players[currentPlayer].board.displayOwnBoard();
       break;
     }
-
-    Coordinate coord = requestCoordinateValue(input);
 
     std::vector<Direction>
         validDirections = getValidDirections(coord, ship.second.shipSize);
@@ -209,12 +237,11 @@ void Game::manuallyPlaceShips() {
           std::to_string(i + 1) + " - " + validDirections[i].name);
     }
     IOHelper::printMenuText("0 - Quit");
-    input = IOHelper::readLine();
+    std::string input = IOHelper::readLine();
 
     if (input == "0") {
       IOHelper::printMenuText("Ships will be randomly placed.");
       autoplaceShips();
-      players[currentPlayer].board.displayOwnBoard();
       break;
     }
 
@@ -225,10 +252,9 @@ void Game::manuallyPlaceShips() {
         placeShip(coord, selectedDirection, ship.second);
         players[currentPlayer].board.displayOwnBoard();
         validDirection = true;
-      } catch (std::string& error) {
+      } catch (...) {
         IOHelper::printMenuText(
-            "Error: invalid direction to place the ship. " + error
-                + "\nPlease try again!\n");
+            "Error: invalid direction to place the ship. Please try again!\n");
         input = IOHelper::readLine();
       }
     } while (!validDirection);
@@ -249,9 +275,9 @@ Coordinate Game::requestCoordinateValue(std::string input) {
     try {
       coord = checkCellValidity(input);
       validCell = true;
-    } catch (std::string& error) {
+    } catch (...) {
       IOHelper::printMenuText(
-          "Error: invalid coordinate. " + error + "\nPlease try again!");
+          "Error: invalid coordinate. Please try again!");
       input = IOHelper::readLine();
     }
   } while (!validCell);
@@ -265,7 +291,7 @@ Coordinate Game::requestCoordinateValue(std::string input) {
  * @param dir
  * @param ship
  */
-void Game::placeShip(Coordinate coord, const Direction& dir, const Ship& ship) {
+void Game::placeShip(Coordinate coord, const Direction& dir, Ship& ship) {
   Cell cell = {ship.shipCode, false};
   for (int i = 0; i < ship.shipSize; i++) {
     if (dir.name == "Up")
@@ -277,6 +303,7 @@ void Game::placeShip(Coordinate coord, const Direction& dir, const Ship& ship) {
     if (dir.name == "Right")
       players[currentPlayer].board.grid[coord.row][coord.col + i] = cell;
   }
+  ship.isPlaced = true;
 }
 
 /**
@@ -313,25 +340,25 @@ int Game::randomInt(int min, int max) {
 }
 
 /**
- * Autoplaces all existing ships on the board.
+ * Automatically places unplaced ships for a particular player on their board.
  */
-//TODO: Find a way to mark ships as placed so they aren't place again if
-//  the function is called after placing some ships manually.
 void Game::autoplaceShips() {
-  for (const std::pair<const char, Ship>& ship : config.ships) {
-    Coordinate coord{};
-    do {
-      coord = pickRandomCoordinate();
-    } while (players[currentPlayer].board.grid[coord.row][coord.col].cellType
-        != '~');
+  for (std::pair<const char, Ship>& ship : players[currentPlayer].ships) {
+    if (!ship.second.isPlaced) {
+      Coordinate coord{};
+      do {
+        coord = pickRandomCoordinate();
+      } while (players[currentPlayer].board.grid[coord.row][coord.col].cellType
+          != '~');
 
-    std::vector<Direction> validDirections;
-    do {
-      validDirections = getValidDirections(coord, ship.second.shipSize);
-    } while (validDirections.empty());
+      std::vector<Direction> validDirections;
+      do {
+        validDirections = getValidDirections(coord, ship.second.shipSize);
+      } while (validDirections.empty());
 
-    Direction dir = getRandomDirection(validDirections);
-    placeShip(coord, dir, ship.second);
+      Direction dir = getRandomDirection(validDirections);
+      placeShip(coord, dir, ship.second);
+    }
   }
 }
 
@@ -342,6 +369,7 @@ void Game::placeShips() {
   if (players[currentPlayer].automated) {
     autoplaceShips();
   } else {
+    players[currentPlayer].board.displayOwnBoard();
     manuallyPlaceShips();
   }
 }
@@ -399,14 +427,9 @@ void Game::shipPlacementPhase() {
  */
 void Game::turnsPhase() {
   currentPlayer = 0;
-  int counter = 0;
   do {
     playTurn();
     switchPlayer();
-    if (counter == 1) { // TODO: remove counter after testing
-      gameOver = true;
-    }
-    counter++;
   } while (!gameOver);
 }
 
@@ -433,29 +456,35 @@ int Game::getEnemyPlayer() const {
  */
 // TODO: break down this function into atomic functions.
 void Game::playTurn() {
+  IOHelper::printEndLine();
+  IOHelper::printMenuText(
+      "PLAYER " + std::to_string(currentPlayer + 1) + "'S TURN:");
   Coordinate coord{};
 
-  if (players[getEnemyPlayer()].automated) {
+  if (players[currentPlayer].automated) {
     do {
       coord = pickRandomCoordinate();
     } while (players[getEnemyPlayer()].board.grid[coord.row][coord.col].hit);
   } else {
+    players[currentPlayer].board.displayOwnBoard();
     IOHelper::printEndLine();
-    IOHelper::printMenuText("ENEMY BOARD:");
+    IOHelper::printMenuText(
+        "ENEMY (PLAYER " + std::to_string(getEnemyPlayer() + 1) + ") BOARD:");
     players[getEnemyPlayer()].board.displayEnemyBoard();
     IOHelper::printMenuText(
         "Select a coordinate to hit on your enemy's board, i.e. A1.");
     std::string input = IOHelper::readLine();
     coord = requestCoordinateValue(input);
   }
-
+  IOHelper::printMenuText(
+      "Player " + std::to_string(currentPlayer + 1) + " fired at player "
+          + std::to_string(getEnemyPlayer() + 1) + "!!");
   players[getEnemyPlayer()].recordHit(coord);
-
-  IOHelper::printMenuText("\nENEMY BOARD:");
-  players[getEnemyPlayer()].board.displayEnemyBoard();
 
   if (players[getEnemyPlayer()].checkLost()) {
     displayWinner();
     gameOver = true;
   }
+  IOHelper::printMenuText(
+      "\nEND OF PLAYER " + std::to_string(currentPlayer + 1) + "'S TURN");
 }

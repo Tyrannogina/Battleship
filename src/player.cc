@@ -1,4 +1,5 @@
 #include "player.h"
+#include "IOHelper.h"
 
 Player::Player() = default;
 
@@ -45,7 +46,12 @@ void Player::recordHit(Coordinate &coord) {
     if (ships[cell->cellType].shipHits == ships[cell->cellType].shipSize) {
       remainingShips--;
       ships[cell->cellType].shipName == "Giant Platypus"? scorePoints(50) : scorePoints(10);
+      IOHelper::printBoardLabelText("The " + ships[cell->cellType].shipName + " was sunk!");
+    } else {
+      IOHelper::printMenuText("A ship was hit!");
     }
+  } else {
+    IOHelper::printMenuText("It's a miss :(");
   }
 }
 

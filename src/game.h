@@ -33,7 +33,7 @@ class Game {
   Coordinate checkCellValidity(std::string cellStr) const;
   static int transformLetterToRow(char letter);
   std::vector<Direction> getValidDirections(Coordinate coord, const int& shipSize);
-  void placeShip(Coordinate coord, const Direction& dir, const Ship& ship);
+  void placeShip(Coordinate coord, const Direction& dir, Ship& ship);
 
   Coordinate pickRandomCoordinate() const;
   static Direction getRandomDirection(std::vector<Direction>& directions);
@@ -45,6 +45,8 @@ class Game {
   void playTurn();
   Coordinate requestCoordinateValue(std::string input);
   int getEnemyPlayer() const;
+  Coordinate manuallySelectEmptyCoordinate(const std::string& initialMessage,
+                                           const std::string& invalidCoordMessage);
 };
 
 #endif

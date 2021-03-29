@@ -10,8 +10,8 @@ Battleship game in C++
   - [x] User can start the game and place their ships (defined in the .ini file).
   - [x] User can skip placing their ships and ships will be automatically placed.
   - [x] User can see their board and the computer’s board 
-  - [ ] User can “shoot” to the other board and hits get displayed on the enemy board
-  - [ ] User can get hit by enemy torpedoes ant that gets displayed on the user’s board
+  - [x] User can “shoot” to the other board and hits get displayed on the enemy board
+  - [x] User can get hit by enemy torpedoes ant that gets displayed on the user’s board
   - [ ] User can see score in every turn
   - [ ] When one of the players loses all their ships, the game ends and displays a victory (or not) message
   - [ ] User can see error messages and have choices for any unrecognised inputs.

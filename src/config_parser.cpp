@@ -117,7 +117,8 @@ Ship ConfigParser::parseShip(const std::string& shipStr, int& boardSize) {
       shipVector[0].at(0),
       shipVector[0],
       parseShipSize(shipVector[1], boardSize),
-      0
+      0,
+      false
   };
   return ship;
 }

@@ -10,6 +10,7 @@ enum CellRepresentation {
   UNKNOWN = 2,
   SHIP = 3,
   SHIP_HIT = 4,
+  UNKNOWN_HIT = 5
 };
 
 /// Each one of the components of the board
