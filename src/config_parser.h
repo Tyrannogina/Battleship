@@ -23,10 +23,10 @@ class ConfigParser {
   bool configFileExists();
   static int sizeValidator(const std::string& sizeStr);
   int parseBoardSize(const std::string& sizeStr) const;
-  int parseShipSize(const std::string& sizeStr) const;
+  int parseShipSize(const std::string& sizeStr, int& boardSize) const;
   std::vector<std::string> fileToVector();
   BoardConfig parseBoard(const std::string& str);
-  Ship parseShip(const std::string& str);
+  Ship parseShip(const std::string& str, int& boardSize);
 };
 
 #endif

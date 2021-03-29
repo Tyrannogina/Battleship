@@ -18,22 +18,29 @@ struct Cell {
   bool hit;
 };
 
+/// A coordinate on the board.
+struct Coordinate {
+  int row;
+  int col;
+};
+
 class Board {
  private:
-  int height;
-  int width;
+  int height{};
+  int width{};
 
  public:
   Board(int height, int width);
   Board();
 
   std::vector<std::vector<Cell>> grid;
-  int getHeight() const;
-  int getWidth() const;
   static CellRepresentation assignCellRepresentationForOwnBoard(Cell& cell);
   void displayOwnBoard();
   void displayEnemyBoard();
-  void printCell(CellRepresentation rep, const Cell& cell);
+  static void printCell(CellRepresentation rep, const Cell& cell);
+  static CellRepresentation assignCellRepresentationForEnemyBoard(Cell& cell);
+  void printColNumbers() const;
+  static void printRowLetter(int row);
 };
 
 #endif

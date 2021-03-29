@@ -20,6 +20,7 @@ struct BoardConfig {
 struct Config {
   BoardConfig board;
   std::map<char, Ship> ships;
+  int totalShips;
 };
 
 #endif //MODELS_H

@@ -11,12 +11,15 @@ class Player {
   Board board;
   std::map<char, Ship> ships;
   bool automated{};
-  int getScore();
+  int getScore() const;
   void scorePoints(int points);
   void initialisePlayer(Config& config);
+  void recordHit(Coordinate& coord);
+  bool checkLost() const;
 
  private:
-  int score{};
+  int score;
+  int remainingShips;
 
 };
 

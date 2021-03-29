@@ -5,12 +5,6 @@
 #include "board.h"
 #include "player.h"
 
-/// A coordinate on the board.
-struct Coordinate {
-  int row;
-  int col;
-};
-
 // Given a cell, this stores a direction (Up, Down, Left, Right)
 struct Direction {
   std::string name;
@@ -23,10 +17,8 @@ class Game {
  public:
   Game();
   void startGame();
-  void endGame();
 
  private:
-  /// Config information containing board size and ships information.
   Config config;
   std::vector<Player> players;
   int currentPlayer;
@@ -40,18 +32,19 @@ class Game {
   static char cleanUpChar(char letter);
   Coordinate checkCellValidity(std::string cellStr) const;
   static int transformLetterToRow(char letter);
-  std::vector<Direction> getValidDirections(Coordinate coord, const Ship& ship);
+  std::vector<Direction> getValidDirections(Coordinate coord, const int& shipSize);
   void placeShip(Coordinate coord, const Direction& dir, const Ship& ship);
 
   Coordinate pickRandomCoordinate() const;
   static Direction getRandomDirection(std::vector<Direction>& directions);
   static int randomInt(int min, int max);
-  void displayWinner();
+  void displayWinner() const;
   void shipPlacementPhase();
   void turnsPhase();
   void switchPlayer();
   void playTurn();
-  Coordinate requestCellValue(std::string input);
+  Coordinate requestCoordinateValue(std::string input);
+  int getEnemyPlayer() const;
 };
 
 #endif

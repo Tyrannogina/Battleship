@@ -2,7 +2,7 @@
 #include "board.h"
 #include "IOHelper.h"
 
-Board::Board() {}
+Board::Board() = default;
 
 Board::Board(int height, int width) : height(height), width(width) {
   Cell emptyCell = {'~', false};
@@ -11,35 +11,65 @@ Board::Board(int height, int width) : height(height), width(width) {
       std::vector<Cell>(width, emptyCell));
 }
 
-int Board::getHeight() const {
-  return height;
+/**
+ * Prints a letter label for a particular row.
+ * @param {int} row
+ */
+void Board::printRowLetter(int row) {
+  std::string rowLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  std::string s(1, rowLabels.at(row));
+  IOHelper::printBoardLabelText(" " + s + " ");
 }
 
-int Board::getWidth() const {
-  return width;
+/**
+ * Prints a row with all the column labels.
+ */
+void Board::printColNumbers() const {
+  IOHelper::printBoardLabelText("   ");
+  for (int col = 1; col <= width; col++) {
+    IOHelper::printBoardLabelText(" " + std::to_string(col) + " ");
+  }
+  IOHelper::printEndLine();
 }
 
+/**
+ * Displays a player own board: all ships are visible by default.
+ */
 void Board::displayOwnBoard() {
+  printColNumbers();
   for (int row = 0; row < height; row++) {
+    printRowLetter(row);
     for (int col = 0; col < width; col++) {
-      CellRepresentation rep = assignCellRepresentationForOwnBoard(grid[row][col]);
+      CellRepresentation
+          rep = assignCellRepresentationForOwnBoard(grid[row][col]);
       printCell(rep, grid[row][col]);
     }
     IOHelper::printEndLine();
   }
 }
 
+/**
+ * Displays the enemy board. Only cells that have been hit display the content
+ * (either ship or water).
+ */
 void Board::displayEnemyBoard() {
+  printColNumbers();
   for (int row = 0; row < height; row++) {
+    printRowLetter(row);
     for (int col = 0; col < width; col++) {
-      if (grid[row][col].hit) {
-        //std::cout << grid[row][col].representation;
-      }
+      CellRepresentation
+          rep = assignCellRepresentationForEnemyBoard(grid[row][col]);
+      printCell(rep, grid[row][col]);
     }
     IOHelper::printEndLine();
   }
 }
 
+/**
+ * Prints a particular cell of the board according to the representation assigned.
+ * @param {enum} rep
+ * @param cell
+ */
 void Board::printCell(CellRepresentation rep, const Cell& cell) {
   switch (rep) {
     case CellRepresentation::WATER:
@@ -52,7 +82,7 @@ void Board::printCell(CellRepresentation rep, const Cell& cell) {
     case CellRepresentation::WATER_HIT:
       IOHelper::printText("[~]",
                           IOHelper::REGULAR,
-                          IOHelper::FG_DEFAULT,
+                          IOHelper::FG_WHITE,
                           IOHelper::BG_BLUE,
                           false);
       break;
@@ -84,6 +114,11 @@ void Board::printCell(CellRepresentation rep, const Cell& cell) {
   }
 }
 
+/**
+ * Returns a particular representation type to a player's board cell.
+ * @param {Cell} cell
+ * @return CellRepresentation
+ */
 CellRepresentation Board::assignCellRepresentationForOwnBoard(Cell& cell) {
   if (cell.cellType == '~') {
     if (cell.hit) {
@@ -97,5 +132,22 @@ CellRepresentation Board::assignCellRepresentationForOwnBoard(Cell& cell) {
     } else {
       return SHIP;
     }
+  }
+}
+
+/**
+ * Returns a particular representation type to an enemy board cell.
+ * @param cell
+ * @return CellRepresentation
+ */
+CellRepresentation Board::assignCellRepresentationForEnemyBoard(Cell& cell) {
+  if (cell.hit) {
+    if (cell.cellType == '~') {
+      return WATER_HIT;
+    } else {
+      return SHIP_HIT;
+    }
+  } else {
+    return UNKNOWN;
   }
 }

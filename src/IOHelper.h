@@ -13,6 +13,7 @@ class IOHelper {
   static std::string const inline FG_DEFAULT = "39";
   static std::string const inline FG_BLUE = "34";
   static std::string const inline FG_RED = "31";
+  static std::string const inline FG_WHITE = "37";
 
   static std::string const inline BG_DEFAULT = "49";
   static std::string const inline BG_BLUE = "44";
@@ -27,6 +28,7 @@ class IOHelper {
                         bool endl = false);
   static void printEndLine();
   static std::string readLine();
+  static void printBoardLabelText(const std::string& str);
 };
 
 #endif //PRINTER_H
