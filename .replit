@@ -1,2 +1,2 @@
 language = "cpp"
-run = "clang++ -std=c++17 *.cpp src/*.cpp src/lib/*.cpp -o main && ./main"
+run = "clang++ -std=c++17 src/*.cpp -o main && ./main"
