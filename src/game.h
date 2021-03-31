@@ -5,11 +5,6 @@
 #include "board.h"
 #include "player.h"
 
-// Given a cell, this stores a direction (Up, Down, Left, Right)
-struct Direction {
-  std::string name;
-};
-
 /**
  * Contains the Game class, which is in charge of running the game, from selection of game type, initialisation, turns and game until end.
  */
@@ -31,7 +26,7 @@ class Game {
   void autoplaceShips();
   static char cleanUpChar(char letter);
   Coordinate checkCellValidity(std::string cellStr) const;
-  static int transformLetterToRow(char letter);
+  static int transformLetterToColumn(char letter);
   std::vector<Direction> getValidDirections(Coordinate coord, const int& shipSize);
   void placeShip(Coordinate coord, const Direction& dir, Ship& ship);
 
@@ -47,6 +42,9 @@ class Game {
   int getEnemyPlayer() const;
   Coordinate manuallySelectEmptyCoordinate(const std::string& initialMessage,
                                            const std::string& invalidCoordMessage);
+  void resetPlayers();
+  void autoplaceShip(Ship& ship);
+  void shipPlacementSelection();
 };
 
 #endif

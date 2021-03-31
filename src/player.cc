@@ -46,12 +46,12 @@ void Player::recordHit(Coordinate &coord) {
     if (ships[cell->cellType].shipHits == ships[cell->cellType].shipSize) {
       remainingShips--;
       ships[cell->cellType].shipName == "Giant Platypus"? scorePoints(50) : scorePoints(10);
-      IOHelper::printBoardLabelText("The " + ships[cell->cellType].shipName + " was sunk!");
+      IOHelper::printContrastMenuText("The " + ships[cell->cellType].shipName + " was sunk!");
     } else {
-      IOHelper::printMenuText("A ship was hit!");
+      IOHelper::printContrastMenuText("A ship was hit!");
     }
   } else {
-    IOHelper::printMenuText("It's a miss :(");
+    IOHelper::printContrastMenuText("It's a miss :(");
   }
 }
 
@@ -62,3 +62,16 @@ void Player::recordHit(Coordinate &coord) {
 bool Player::checkLost() const {
   return remainingShips == 0;
 }
+
+/**
+ * Displays a list of all the ships and if they are placed or not.
+ */
+void Player::displayShipPlacementStatus() {
+  for (std::pair<char, Ship> ship : ships) {
+    std::string placement = "Not placed";
+    if (ship.second.isPlaced) {
+      placement = "Placed";
+    }
+    IOHelper::printMenuText(ship.second.shipName + ": " + placement);
+  }
+};

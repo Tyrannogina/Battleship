@@ -27,6 +27,7 @@ class ConfigParser {
   std::vector<std::string> fileToVector();
   BoardConfig parseBoard(const std::string& str);
   Ship parseShip(const std::string& str, int& boardSize);
+  void removeSpaces(std::string& str);
 };
 
 #endif

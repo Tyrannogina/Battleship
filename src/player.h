@@ -16,11 +16,12 @@ class Player {
   void initialisePlayer(Config& config);
   void recordHit(Coordinate& coord);
   bool checkLost() const;
+  void displayShipPlacementStatus();
 
  private:
   int score;
   int remainingShips;
-
+  void autoplaceShip(Ship& ship);
 };
 
 #endif //SRC_PLAYER_H

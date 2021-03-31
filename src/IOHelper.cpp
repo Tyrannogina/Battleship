@@ -12,6 +12,10 @@ void IOHelper::printMenuText(const std::string& str) {
   printText(str, BOLD, FG_BLUE, BG_DEFAULT, true);
 }
 
+void IOHelper::printContrastMenuText(const std::string& str) {
+  printText(str, BOLD, FG_RED, BG_DEFAULT, true);
+}
+
 /**
  * Prints board label text: bold white foreground on red background.
  * @param str

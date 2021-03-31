@@ -29,6 +29,7 @@ class IOHelper {
   static void printEndLine();
   static std::string readLine();
   static void printBoardLabelText(const std::string& str);
+  static void printContrastMenuText(const std::string& str);
 };
 
 #endif //PRINTER_H

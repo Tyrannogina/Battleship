@@ -45,7 +45,7 @@ std::vector<std::string> splitByDelimiter(const std::string& delimiter,
  * Removes spaces from a string.
  * @param str reference to the string that will be stripped out of spaces.
  */
-void removeSpaces(std::string& str) {
+void ConfigParser::removeSpaces(std::string& str) {
   str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
 }
 
@@ -98,6 +98,7 @@ int ConfigParser::parseShipSize(const std::string& sizeStr,
  * @return BoardConfig
  */
 BoardConfig ConfigParser::parseBoard(const std::string& str) {
+  removeSpaces(const_cast<std::string&>(str));
   std::vector<std::string> sizes = splitByDelimiter("x", str);
   return {
       parseBoardSize(sizes[0]),
@@ -113,6 +114,7 @@ BoardConfig ConfigParser::parseBoard(const std::string& str) {
  */
 Ship ConfigParser::parseShip(const std::string& shipStr, int& boardSize) {
   std::vector<std::string> shipVector = splitByDelimiter(",", shipStr);
+  removeSpaces(shipVector[1]);
   Ship ship = {
       shipVector[0].at(0),
       shipVector[0],
@@ -165,8 +167,8 @@ Config ConfigParser::parseConfig() {
   Config config;
   config.totalShips = 0;
   for (std::string line : configLines) {
-    removeSpaces(line);
-    std::vector<std::string> parsedLine = splitByDelimiter(":", line);
+    std::vector<std::string> parsedLine = splitByDelimiter(": ", line);
+    removeSpaces(parsedLine[0]);
     if (parsedLine[0] == "Board") {
       config.board = parseBoard(parsedLine[1]);
     }

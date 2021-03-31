@@ -12,22 +12,26 @@ Board::Board(int height, int width) : height(height), width(width) {
 }
 
 /**
- * Prints a letter label for a particular row.
+ * Prints a number label for a particular row.
  * @param {int} row
  */
-void Board::printRowLetter(int row) {
-  std::string rowLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  std::string s(1, rowLabels.at(row));
-  IOHelper::printBoardLabelText(" " + s + " ");
+void Board::printRowNumber(int row) {
+  if (row + 1 < 10) {
+    IOHelper::printBoardLabelText(" " + std::to_string(row + 1) + " ");
+  } else {
+    IOHelper::printBoardLabelText(std::to_string(row + 1) + " ");
+  }
 }
 
 /**
- * Prints a row with all the column labels.
+ * Prints a row with all the letter column labels.
  */
-void Board::printColNumbers() const {
+void Board::printColLetters() const {
+  std::string colLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   IOHelper::printBoardLabelText("   ");
-  for (int col = 1; col <= width; col++) {
-    IOHelper::printBoardLabelText(" " + std::to_string(col) + " ");
+  for (int col = 0; col < width; col++) {
+    std::string s(1, colLabels.at(col));
+    IOHelper::printBoardLabelText(" " + s + " ");
   }
   IOHelper::printEndLine();
 }
@@ -36,9 +40,9 @@ void Board::printColNumbers() const {
  * Displays a player own board: all ships are visible by default.
  */
 void Board::displayOwnBoard() {
-  printColNumbers();
+  printColLetters();
   for (int row = 0; row < height; row++) {
-    printRowLetter(row);
+    printRowNumber(row);
     for (int col = 0; col < width; col++) {
       CellRepresentation
           rep = assignCellRepresentationForOwnBoard(grid[row][col]);
@@ -53,9 +57,9 @@ void Board::displayOwnBoard() {
  * (either ship or water).
  */
 void Board::displayEnemyBoard() {
-  printColNumbers();
+  printColLetters();
   for (int row = 0; row < height; row++) {
-    printRowLetter(row);
+    printRowNumber(row);
     for (int col = 0; col < width; col++) {
       CellRepresentation
           rep = assignCellRepresentationForEnemyBoard(grid[row][col]);
@@ -87,7 +91,7 @@ void Board::printCell(CellRepresentation rep, const Cell& cell) {
                           false);
       break;
     case CellRepresentation::UNKNOWN:
-      IOHelper::printText("[.]",
+      IOHelper::printText("[·]",
                           IOHelper::REGULAR,
                           IOHelper::FG_DEFAULT,
                           IOHelper::BG_DEFAULT,
@@ -113,7 +117,7 @@ void Board::printCell(CellRepresentation rep, const Cell& cell) {
       break;
     case CellRepresentation::UNKNOWN_HIT: {
       std::string s(1, cell.cellType);
-      IOHelper::printText("[ # ]",
+      IOHelper::printText("[#]",
                           IOHelper::REGULAR,
                           IOHelper::FG_RED,
                           IOHelper::BG_DEFAULT,

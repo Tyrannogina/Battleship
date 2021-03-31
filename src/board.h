@@ -25,6 +25,11 @@ struct Coordinate {
   int col;
 };
 
+// Given a cell, this stores a direction (Up, Down, Left, Right)
+struct Direction {
+  std::string name;
+};
+
 class Board {
  private:
   int height{};
@@ -40,8 +45,8 @@ class Board {
   void displayEnemyBoard();
   static void printCell(CellRepresentation rep, const Cell& cell);
   static CellRepresentation assignCellRepresentationForEnemyBoard(Cell& cell);
-  void printColNumbers() const;
-  static void printRowLetter(int row);
+  static void printRowNumber(int row);
+  void printColLetters() const;
 };
 
 #endif
