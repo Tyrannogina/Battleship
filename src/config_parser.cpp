@@ -12,7 +12,7 @@
 ConfigParser::ConfigParser()
     : MIN_BOARD_SIZE(5),
       MAX_BOARD_SIZE(80),
-      filename("../adaship_config.ini") {};
+      filename("adaship_config.ini") {};
 
 /**
  * Checks if the config file exists.
@@ -161,7 +161,7 @@ std::vector<std::string> ConfigParser::fileToVector() {
  //  will be rewritten.
 Config ConfigParser::parseConfig() {
   if (!configFileExists()) {
-    std::cout << "File not found";
+    throw std::invalid_argument("File not found");
   }
   std::vector<std::string> configLines = fileToVector();
   Config config;
