@@ -11,39 +11,24 @@
 /**
  * Constructor calls config parser and creates players based on the config.
  */
-Game::Game() : currentPlayer(0), gameOver(false) {
-  ConfigParser configParser;
-  config = configParser.parseConfig();
-  createPlayers(false, true);
-}
-
-void Game::createPlayers(bool automatedPlayer1, bool automatedPlayer2) {
-  Player player1(automatedPlayer1);
-  player1.initialisePlayer(config);
-  Player player2(automatedPlayer2);
-  player2.initialisePlayer(config);
-  this->players = {player1, player2};
+Game::Game(bool player1automation, bool player2Automation, Config config)
+    : currentPlayer(0),
+      gameOver(false),
+      config(config) {
+  createPlayers(player1automation, player2Automation);
+  shipPlacementPhase();
+  turnsPhase();
 }
 
 /**
- * Displays initial menu with game options and option for quitting.
+ * Creates the 2 players for the Battleship game.
+ * @param player1automation
+ * @param player2Automation
  */
-void Game::displayMenu() {
-  IOHelper::printEndLine();
-  IOHelper::printText("Welcome to ",
-                      IOHelper::BOLD,
-                      IOHelper::FG_BLUE,
-                      IOHelper::BG_DEFAULT,
-                      false);
-  IOHelper::printText("Battle",
-                      IOHelper::BOLD,
-                      IOHelper::FG_RED,
-                      IOHelper::BG_DEFAULT,
-                      false);
-  IOHelper::printMenuText("ship!");
-  IOHelper::printMenuText("What would you like to do?");
-  IOHelper::printMenuText("1 - One player vs. computer");
-  IOHelper::printMenuText("0 - Quit");
+void Game::createPlayers(bool player1automation, bool player2Automation) {
+  Player p1(player1automation, config);
+  Player p2(player2Automation, config);
+  this->players = {p1, p2};
 }
 
 /**
@@ -444,43 +429,11 @@ void Game::displayWinner() const {
  * Resets the players.
  */
 void Game::resetPlayers() {
-  Player player1(false);
-  player1.initialisePlayer(config);
-  Player player2(true);
-  player2.initialisePlayer(config);
-  this->players = {player1, player2};
-}
-
-/**
- * Displays initial menu directs the user to their options (at the moment,
- * one player vs computer or quit).
- */
-void Game::startGame() {
-  int selection;
-  do {
-    displayMenu();
-    try {
-      selection = std::stoi(IOHelper::readLine());
-      switch (selection) {
-        case 1: {
-          shipPlacementPhase();
-          turnsPhase();
-          resetPlayers();
-          gameOver = false;
-          break;
-        }
-        case 2:break;
-        case 0:IOHelper::printMenuText("Goodbye");
-          break;
-        default:
-          IOHelper::printMenuText(
-              "That was not a valid menu option, please try again!");
-      }
-    } catch (...) {
-      IOHelper::printMenuText(
-          "That was not a valid menu option, please try again!");
-    }
-  } while (selection != 0);
+  bool p1Auto = players[0].automated;
+  bool p2Auto = players[1].automated;
+  Player player1(p1Auto, config);
+  Player player2(p2Auto, config);
+  players = {player1, player2};
 }
 
 /**
@@ -577,3 +530,4 @@ void Game::playTurn() {
         "END OF PLAYER " + std::to_string(currentPlayer + 1) + "'S TURN");
   }
 }
+

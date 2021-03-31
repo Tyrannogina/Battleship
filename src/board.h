@@ -37,7 +37,6 @@ class Board {
 
  public:
   Board(int height, int width);
-  Board();
 
   std::vector<std::vector<Cell>> grid;
   static CellRepresentation assignCellRepresentationForOwnBoard(Cell& cell);

@@ -1,9 +1,15 @@
 #include "player.h"
 #include "IOHelper.h"
 
-Player::Player() = default;
-
-Player::Player(bool automated) : automated(automated), score(0) {
+/**
+ * Performs necessary operations to initialise a player: create board, get ships
+ * from the config.
+ * @param automated
+ * @param config
+ */
+Player::Player(bool automated, Config& config) : automated(automated), score(0), board(config.board.height, config.board.width) {
+  this->ships = config.ships;
+  this->remainingShips = config.totalShips;
 }
 
 int Player::getScore() const {
@@ -16,17 +22,6 @@ int Player::getScore() const {
  */
 void Player::scorePoints(int points) {
   score += points;
-}
-
-/**
- * Performs necessary operations to initialise a player: create board, get ships
- * from the config.
- * @param config
- */
-void Player::initialisePlayer(Config& config) {
-  this->board = Board(config.board.height, config.board.width);
-  this->ships = config.ships;
-  this->remainingShips = config.totalShips;
 }
 
 /**

@@ -2,8 +2,6 @@
 #include "board.h"
 #include "IOHelper.h"
 
-Board::Board() = default;
-
 Board::Board(int height, int width) : height(height), width(width) {
   Cell emptyCell = {'~', false};
   this->grid = std::vector<std::vector<Cell>>(

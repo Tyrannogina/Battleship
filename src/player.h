@@ -6,14 +6,12 @@
 
 class Player {
  public:
-  Player(bool automated);
-  Player();
+  Player(bool automated, Config& config);
   Board board;
   std::map<char, Ship> ships;
   bool automated{};
   int getScore() const;
   void scorePoints(int points);
-  void initialisePlayer(Config& config);
   void recordHit(Coordinate& coord);
   bool checkLost() const;
   void displayShipPlacementStatus();
@@ -21,7 +19,6 @@ class Player {
  private:
   int score;
   int remainingShips;
-  void autoplaceShip(Ship& ship);
 };
 
 #endif //SRC_PLAYER_H

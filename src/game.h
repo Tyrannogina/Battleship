@@ -10,8 +10,8 @@
  */
 class Game {
  public:
-  Game();
-  void startGame();
+  Game(bool player1automation, bool player2Automation, Config config);
+
 
  private:
   Config config;
@@ -19,7 +19,6 @@ class Game {
   int currentPlayer;
   bool gameOver;
 
-  static void displayMenu();
   void createPlayers(bool automatedPlayer1, bool automatedPlayer2);
   void placeShips();
   void manuallyPlaceShips();
