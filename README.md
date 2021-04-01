@@ -1,8 +1,15 @@
 # Battleship
-Battleship game in C++
+
+## Summary
+The goal of this repository is to create a battleship game, playable from the terminal and developed in C++. 
 
 ## Agile development
-
+Summary and review of the problem, overall proposed solution.
+b. UML style diagram illustrating initial overall solution (linked to 1a)
+c. Initial working plan, overall approach, development strategy and approach to quality (linked to 1a,
+1b).
+d. Analysis and decomposition of the overall problem into key ‘epic’ style tasks (linked to 1b, 1c).
+e. Initial object-oriented design ideas and plan of phased breakdown into smaller tasks (linked to 1d).
 ### Epics:
 - [x] First version of the game working
   #### User stories:
