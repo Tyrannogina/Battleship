@@ -12,7 +12,7 @@ First I drafted a [plan in pseudocode](pseudocode.md) regarding the general stru
  If I had known the language better, it could have been a more accurate plan, but I ended up applying several changes to the initial draft as I became acquainted with the in and outs of C++ and its limitations. This first draft is broken down into small tasks, as it defines classes and methods. 
 
 ### Overall approach and development strategy
-For organising the development of the project, I created a list of epics divided in user stories. I developed the first epic on a separate branch, `game-v1`, that was then merged through a pull request into main. I made commits often, at least 1 per day. 
+For organising the development of the project, I created a list of epics divided in user stories. I developed the first epic on a separate branch, `game-v1`, that was then merged through a pull request into main. I made commits often, at least 1 per day. You can see the epic/user story breakdown below, as well as the UML diagram with the classes in the project.
 
 #### Epics:
 - [x] First version of the game working
@@ -38,4 +38,4 @@ For organising the development of the project, I created a list of epics divided
     ##### User stories:
     - [ ] Second player will be able to do as first player in a salvo vs computer game.
   
-
+![UML diagram](UMLDiagram.png)
