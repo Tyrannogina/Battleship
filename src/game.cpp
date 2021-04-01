@@ -162,12 +162,12 @@ std::vector<Direction> Game::getValidDirections(Coordinate coord,
 }
 
 /**
- * Tries to pick an empty coordinate in the board.
+ * Tries to pick an empty coordinate in the board from user input.
  * @param initialMessage message printed the first time asking for the
  * coordinate.
  * @param invalidCoordMessage message printed when asking if the previous
  * attempt was not valid.
- * @return
+ * @return Coordinate
  */
 Coordinate Game::manuallySelectEmptyCoordinate(const std::string& initialMessage,
                                                const std::string& invalidCoordMessage) {
@@ -367,7 +367,7 @@ void Game::autoplaceShip(Ship& ship) {
 }
 
 /**
- * Places available ships on the board.
+ * Places available ships on the board depending on type of player.
  */
 void Game::placeShips() {
   if (players[currentPlayer].automated) {
@@ -376,7 +376,7 @@ void Game::placeShips() {
     bool happy = false;
     do {
       players[currentPlayer].board.displayOwnBoard();
-      shipPlacementSelection();
+      shipPlacementSelectionMenu();
       IOHelper::printMenuText(
           "All your ships have been placed! What would you like to do?");
       IOHelper::printMenuText("1 - Continue. Let's play!");
@@ -398,7 +398,11 @@ void Game::placeShips() {
   }
 }
 
-void Game::shipPlacementSelection() {
+/**
+ * Displays a menu for manual players to select if they want to place ships
+ * manually or automatically on their boards.
+ */
+void Game::shipPlacementSelectionMenu() {
   IOHelper::printMenuText(
       "It's your turn to place the ships on the board. How would you like to do this?");
   IOHelper::printMenuText("1 - Place ships manually.");
@@ -411,8 +415,9 @@ void Game::shipPlacementSelection() {
     players[currentPlayer].board.displayOwnBoard();
   }
 }
+
 /**
- * Displays the winning player (either 1 or 2).
+ * Displays the winner (either player 1 or 2).
  */
 void Game::displayWinner() const {
   IOHelper::printBoardLabelText("                                  ");

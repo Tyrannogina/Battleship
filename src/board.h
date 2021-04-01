@@ -34,18 +34,17 @@ class Board {
  private:
   int height{};
   int width{};
+  void printColLetters() const;
+  static void printRowNumber(int row);
+  static CellRepresentation assignCellRepresentationForOwnBoard(Cell& cell);
+  static void printCell(CellRepresentation rep, const Cell& cell);
+  static CellRepresentation assignCellRepresentationForEnemyBoard(Cell& cell);
 
  public:
   Board(int height, int width);
-
   std::vector<std::vector<Cell>> grid;
-  static CellRepresentation assignCellRepresentationForOwnBoard(Cell& cell);
   void displayOwnBoard();
   void displayEnemyBoard();
-  static void printCell(CellRepresentation rep, const Cell& cell);
-  static CellRepresentation assignCellRepresentationForEnemyBoard(Cell& cell);
-  static void printRowNumber(int row);
-  void printColLetters() const;
 };
 
 #endif
